@@ -1,0 +1,21 @@
+Confirm version
+----------------
+php -v
+composer
+laravel
+
+Open VSCode
+------------
+code .
+
+Create project
+---------------
+composer create-project laravel/laravel myApp
+laravel new myApp
+php artisan new myApp
+
+Run project
+------------
+php artisan mograte
+php artisan serve
+

@@ -1,0 +1,64 @@
+//Make new migration to create sample table
+//command
+php artisan make:migration create_sample_table
+
+//Created
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('sample', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('sample');
+    }
+};
+
+//We updated as per our need
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('sample', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('sample');
+    }
+};
+
+//Create table in database
+//command
+php artisan migrate
+
+//Delete completely all migrations or all table created using migrate command
+php artisan migrate:reset
+
+//Rollback
+//It will roll back/delete last run migration
+php artisan migrate
+artisan make:migration create_test_table
+php artisan migrate
+php artisan migrate:rollback
+
+
+//It will roll back/delete last 2 run migrations
+php artisan migrate:rollback --step 2
+
+
+//It will delete all migrations and migrate again
+php artisan migrate:refresh
+
+//Migrate single table/migration
+php artisan migrate --path=/database/migrations/2025_08_17_015309_create_sample_table.php

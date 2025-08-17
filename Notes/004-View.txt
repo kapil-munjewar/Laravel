@@ -1,0 +1,17 @@
+View
+-----
+php artisan make:view about
+php artisan make:view admin.login
+
+Ex - Check view exist or not
+Route::get('/about/{name}', function ($name) {
+    if(View::Exists('about')){
+        return view('about', ['name' => $name]);
+    }else{
+        return "Not found";
+    }
+    
+});
+
+
+Note: More details check Routs and Controller files

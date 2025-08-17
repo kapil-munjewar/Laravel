@@ -1,0 +1,81 @@
+
+.env
+-----
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=kapilmunjewar88@gmail.com
+MAIL_PASSWORD=xxxxxxxxxxxxxxxx
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=kapilmunjewar88@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+web.php
+--------
+Route::get('send-mail', [MailController::class, 'sendEmail']);
+
+//command
+php artisan make:mail WelcomeEmail
+
+WelcomeEmail.php
+----------------
+class WelcomeEmail extends Mailable
+{
+    use Queueable, SerializesModels;
+    public $sub;
+    public $msg;
+
+    public function __construct($msg, $sub)
+    {
+        $this->msg = $msg;
+        $this->sub = $sub;
+    }
+
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: $this->sub,
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            view: 'mail',
+        );
+    }
+
+    public function attachments(): array
+    {
+        return [];
+    }
+}
+
+MailController.php
+-------------------
+use App\Mail\WelcomeEmail;
+use Illuminate\Support\Facades\Mail;
+class MailController extends Controller
+{
+    function sendEmail(){
+		$to = "kapilmunjewar@gmail.com";
+		$subject = "From laravel app";
+		$msg = "Welcome to Laravel world!!";
+
+		Mail::to($to)->send(new WelcomeEmail($msg, $subject));
+	}
+}
+
+
+mail.blade.php
+---------------
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {{$msg}}
+</body>
+</html>

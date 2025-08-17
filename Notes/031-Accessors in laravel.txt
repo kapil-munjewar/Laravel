@@ -1,0 +1,30 @@
+Accessors in Laravel are methods defined within an Eloquent model that allow for the manipulation 
+or transformation of an attribute's value after it has been retrieved from the database and 
+before it is accessed in your application code. They provide a way to format or present data 
+in a specific manner without altering the raw data stored in the database.
+
+web.php
+--------
+Route::get('list', [StudentController::class, 'list']);
+
+StudentController.php
+---------------------
+use App\Models\Student;
+class StudentController extends Controller
+{
+    function list(){
+		return Student::all();
+	}
+}
+
+
+Student.php
+------------
+class Student extends Model
+{
+    protected $table = 'college_students';
+
+    function getNameAttribute($val){		
+        return ucfirst($val);				//return first letter capital
+    }
+}

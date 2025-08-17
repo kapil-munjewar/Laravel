@@ -1,0 +1,36 @@
+Sub view example
+================
+
+Route
+------
+Route::get('/home', [UserController::class, 'home']);
+
+Controller
+-----------
+class UserController extends Controller
+{
+    function home(){
+        $text = "This is home page.";
+        return view('home', ['text' => $text]);
+    }
+}
+
+Home page
+---------
+@include('common.header')
+<h1>Home page</h1>
+@include('common.inner', ['text'=>$text])  //Passing data to sub view
+@includeif('common.innerr', ['text'=>$text]) //check sub view present or not
+
+common.header
+-------------
+<div style="background-color: green;">
+    <h2>This is header!!</h2>
+</div>
+
+common.inner
+-------------
+<div style="color: blue;">
+    <h2>This is inner!!</h2>
+    <h3>{{$text}}</h3>
+</div>

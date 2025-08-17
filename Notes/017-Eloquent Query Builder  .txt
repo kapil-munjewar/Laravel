@@ -1,0 +1,186 @@
+web.php
+--------
+Route::get('/students', [HomeController::class, 'getStudents']);
+
+HomeController.php
+-------------------
+class HomeController extends Controller
+{
+    function getStudents(){
+
+        // $students = Student::where('id', 1)->get();
+		// $students = [ $students];
+
+        // $students = Student::find(1);
+        // $students = [ $students];
+
+        // $students = Student::insert([
+        //     'name'=>'rohan',
+        //     'email'=>'rohan@test.com',
+        //     'batch'=>'2015'
+        // ]);
+        // if($students){
+        //     echo 'Inserted successfully!!';
+        // }else{
+        //     echo 'Insert failled!!';
+        // }
+		
+		//OR
+		
+		// $student = new Student();
+        // $student->name = $request->name;
+        // $student->email = $request->email;
+        // $student->batch = $request->batch;
+        // $result = $student->save();
+        // if($result){
+        //     return redirect('/students');
+        // }else{
+        //     return 'Operation failled!!';
+        // }
+
+        // $students = Student::where('name','rohan')->delete();
+		//OR
+		// $student = Student::destroy($id); //If you want to delete by id
+        // if($students){
+        //     echo 'delete successfully!!';
+        // }else{
+        //     echo 'delete failled!!';
+        // }
+
+        // $students = Student::where('id',1)->update([
+        //     'name'=>'rohan',
+        //     'email'=>'rohan@test.com'
+        // ]);
+        // if($students){
+        //     echo 'update successfully!!';
+        // }else{
+        //     echo 'update failled!!';
+        // }
+
+        $students = Student::all();
+        return view('home', ['students'=> $students]);
+    }
+}
+
+home.blade.php
+---------------
+<div>
+    <h1>Home Page</h1>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Batch</td>
+        </tr>
+        @foreach($students as $student)
+        <tr>
+            <td>{{$student->id}}</td>
+            <td>{{$student->name}}</td>
+            <td>{{$student->email}}</td>
+            <td>{{$student->batch}}</td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+
+
+Extras
+======
+select all
+-----------
+$students = Student::all();
+
+select single record from table
+--------------------------------
+$student = Student::find($id);
+
+delete
+-------
+$student = Student::destroy($id);
+
+Update
+------
+$student = Student::find($id);
+$student->name = $request->name;
+$student->email = $request->email;
+$student->batch = $request->batch;
+$student->save()
+
+
+
+Example
+-------
+StudentController.php
+----------------------
+class StudentController extends Controller
+{
+    function students(){
+        $students = Student::all();
+        return view('/students', ['students'=>$students]);
+    }
+
+    function addStudent(Request $request){
+        $student = new Student();
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->batch = $request->batch;
+        $result = $student->save();
+
+        if($result){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function update($id){
+        $student = Student::find($id);
+        if($student){
+            return view('/updateStudent', ['student'=>$student]);
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function updateStudent(Request $request, $id){
+        $student = Student::find($id);
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->batch = $request->batch;
+
+        if($student->save()){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function deleteStudent($id){
+        $student = Student::destroy($id);
+
+        if($student){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+}
+
+
+Search Functionality
+====================
+students.blade.php
+------------------
+<form action="/search" method="get">
+    <input type="text" name="searchText" value="{{@$searchText}}" placeholder="search name"> //@$searchText -> Show only, if available
+    <button>search</button>
+</form>
+
+StudentController.php
+----------------------
+function search(Request $request){
+    $studentsData = Student::where('name', 'like', "%$request->searchText%")->get();
+
+    return view('/students', ['students'=>$studentsData, 'searchText'=>$request->searchText]);
+}

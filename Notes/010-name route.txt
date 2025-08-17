@@ -1,0 +1,50 @@
+web.php
+--------
+Route::view('/home/profile/kapil/info', 'home')->name('hm');
+
+welcome.blade.php
+---------------
+<!-- <a href="/home/profile/kapil/info">Home</a> -->
+<a href="{{route('hm')}}">Home</a>
+
+Example with controller -1 
+===========================
+welcome.blade.php
+---------------
+<a href="/show">show</a>
+
+web.php
+--------
+Route::view('/home/profile/kapil/info', 'home')->name('hm');
+Route::get('/show',[UserController::class, 'show'])->name('show');
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function show(){
+        // return redirect()->to('/home/profile/kapil/info');
+        return to_route('hm');
+    }
+}
+
+Example with controller -2
+===========================
+welcome.blade.php
+---------------
+<a href="/show">show</a>
+
+web.php
+--------
+Route::view('/home/profile/kapil/info/{name}', 'home')->name('hm');
+Route::get('/show',[UserController::class, 'show']);
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function show(){
+        $name="kailash";
+        return to_route('hm',["name"=>$name]);
+    }
+}

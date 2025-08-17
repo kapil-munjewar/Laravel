@@ -1,0 +1,43 @@
+Blade template
+---------------
+//Controller code
+class UserController extends Controller
+{
+    function home($name){
+        $users = ['user1', 'user2', 'user3'];
+        return view('home', ['name' => $name, 'users'=> $users]);
+    }
+}
+
+//blade code
+<p>{{$name}}</p>
+
+//php code
+<p><?php echo $name ?></p>
+
+//Printing random number
+<p>{{rand()}}</p>
+
+//@if
+@if($name == 'kapil')
+<p>This is Kapil.</p>
+@elseif($name == 'ram')
+<p>This is Ram.</p>
+@else
+<p>Other user.</p>
+@endif
+
+//@foreach
+<!-- <h1>{{$users[0]}}</h1> -->
+@foreach ($users as $user)
+<h4>{{$user}}</h4>
+@endforeach
+
+//@for
+@for($i=0;$i<=10;$i++)
+<p>{{$i}}</p>
+@endfor
+
+@for($i=0;$i<count($users);$i++)
+<p>{{$users[$i]}}</p>
+@endfor

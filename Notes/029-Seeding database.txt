@@ -1,0 +1,26 @@
+Database seeding is the process of populating your application's database with initial or dummy data 
+using specially designed seed classes. This feature is particularly valuable during development and testing phases
+
+//command to generate seeding class
+php artisan make:seeder SampleSeeder
+
+//Update the class as per your need
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
+class SampleSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::table('sample')->insert([
+            'name' => Str::random(10),
+            'email' => Str::random(10)."@gmail.com"
+        ]);
+    }
+}
+
+
+//command to run seeding class
+//this command will auto fill your database
+php artisan db:seed --class=SampleSeeder

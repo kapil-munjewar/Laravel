@@ -1,0 +1,73 @@
+//Layout with component
+
+layout.blade.php
+-----------------
+<html lang="en">
+<head>
+	//Save css and js file inside /public folder
+	<link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js"></script>
+
+    <title>{{$title}}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary ">
+	//Navbar content
+    </nav>
+
+    <div>
+        {{$main}}
+    </div>
+
+    <div class="footer">
+	//Footer content
+    </div>
+</body>
+</html>
+
+welcome.blade.php
+------------------
+<x-layout>
+    <x-slot name="title">Welcome</x-slot>
+
+    <x-slot name="main">
+        <div class="container mt-3">
+        </div>
+    </x-slot>
+
+</x-layout>
+
+
+//Layout with extends
+
+layout.blade.php
+-----------------
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js"></script>
+
+    <title>@yield('title')</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary ">
+    </nav>
+
+    @section('main')
+    @show
+
+    <div class="footer">
+        <p>Footer</p>
+    </div>
+</body>
+</html>
+
+welcome.blade.php
+------------------
+@extends("components.layout")
+@section('title', 'Welcome')
+
+@section('main')
+        <div class="container mt-3">
+        </div>
+@endsection

@@ -1,0 +1,56 @@
+web.php
+--------
+Route::view('/form', 'user');
+Route::view('/profile', 'profile');
+Route::post('/user', [UserController::class, 'login']);
+Route::get('/logout', [UserController::class, 'logout']);
+
+user.blade.php
+---------------
+<div>
+    <h1>User page</h1>
+    <div style="border: 1px solid red;padding:10px;">
+        <form action="/user" method="post">
+            @csrf
+            <input type="text" name="username" placeholder="Enter username"><br><br>
+            <input type="password" name="password" placeholder="Enter password"><br><br>
+            <button>Submit</button>
+        </form>
+    </div>
+</div>
+
+profile.blade.php
+------------------
+<div>
+    <h1>Profile page</h1>
+    @if(session('username'))
+        <p>Username : {{session('username')}}</p>
+        <p>Password : {{session('allData')['password']}}</p>
+        <!-- <p>{{print_r(session('allData'))}}</p> -->
+        <a href="/logout">Logout</a>
+    @else
+        <p>User data not found!!</p>
+        <a href="/form">Login</a>
+    @endif
+</div>
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function login(Request $request){
+        // echo $request->username;
+        //create session to store username
+        $request->session()->put('username', $request->username);
+        // echo session('username');
+        $request->session()->put('allData', $request->input());
+        return redirect('profile');
+    }
+
+    function logout(){
+        //delete username from session
+        session()->pull('username');
+        session()->pull('allData');
+        return redirect('profile');
+    }
+}

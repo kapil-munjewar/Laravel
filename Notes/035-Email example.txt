@@ -1,0 +1,104 @@
+.env
+-----
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=kapilmunjewar88@gmail.com
+MAIL_PASSWORD=xxxxxxxxxxxxxxxx
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=kapilmunjewar88@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+web.php
+--------
+Route::post('send-mail', [MailController::class, 'sendEmail']);
+Route::view('send-mail','send-email');
+
+//command
+php artisan make:mail WelcomeEmail
+
+WelcomeEmail.php
+----------------
+class WelcomeEmail extends Mailable
+{
+    use Queueable, SerializesModels;
+    public $sub;
+    public $msg;
+
+    public function __construct($msg, $sub)
+    {
+        $this->msg = $msg;
+        $this->sub = $sub;
+    }
+
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: $this->sub,
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            view: 'mail',
+        );
+    }
+
+    public function attachments(): array
+    {
+        return [];
+    }
+}
+
+MailController.php
+-------------------
+use App\Mail\WelcomeEmail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+class MailController extends Controller
+{
+    function sendEmail(Request $request){
+		$to = $request->to;
+		$subject = $request->subject;
+		$msg = $request->msg;
+
+		Mail::to($to)->send(new WelcomeEmail($msg, $subject));
+		return "Email has been sent!!";
+	}
+}
+
+
+mail.blade.php
+---------------
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {{$msg}}
+</body>
+</html>
+
+
+send-email.blade.php
+----------------------
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email</title>
+</head>
+<body>
+    <h2>Contact us by Email</h2>
+    <form action="send-mail" method="post">
+        @csrf
+        <input type="text" name="to" placeholder="Enter email address"><br><br>
+        <input type="text" name="subject" placeholder="Enter email subject"><br><br>
+        <textarea name="msg" placeholder="Enter message..."></textarea><br><br>
+        <button>Send Email</button>
+    </form>
+</body>
+</html>

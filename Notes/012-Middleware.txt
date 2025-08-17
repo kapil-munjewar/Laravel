@@ -1,0 +1,184 @@
+Middleware
+-----------
+It is layer between user and application.
+Request -> Middleware -> View/Controller
+
+Type of middleware
+-------------------
+1. Global middleware
+2. Route middleware
+3. Group middleware
+
+1. Global middleware  //Apply to all routes
+=====================
+php artisan make:middleware AgeCheck
+
+bootstrap/app.php
+------------------
+use App\Http\Middleware\AgeCheck;
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        //
+        $middleware->append(AgeCheck::class);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
+
+app/Http/Middleware/AgeCheck.php
+---------------------------------
+class AgeCheck
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        // echo 'From AgeCheck middleware';
+		// echo $request;
+        // echo "<pre>";
+        // print_r($request);
+        // echo "</pre>";
+        if($request->age < 18){
+            die("You can not access this page!!");
+        }
+        return $next($request);
+    }
+}
+
+2. Route Middleware
+====================
+Note: If you are asigning middleware to single route then no need to update file app/Http/Middleware/AgeCheck.php
+	  Only Global middleware, Group middleware required to update file app/Http/Middleware/AgeCheck.php
+php artisan make:middleware AgeCheck
+php artisan make:middleware CountryCheck
+
+AgeCheck.php
+-------------
+class AgeCheck
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        // echo 'From AgeCheck middleware';
+        if($request->age < 18){
+            die('Under age!!');
+        }
+        return $next($request);
+    }
+}
+
+CountryCheck.php
+-----------------
+class CountryCheck
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        // echo 'From AgeCheck middleware';
+        if($request->country != 'india'){
+            die('Outside India!');
+        }
+        return $next($request);
+    }
+}
+
+web.php
+--------
+Route::view('/home', 'home')->middleware(AgeCheck::class);
+Route::view('/about', 'about')->middleware([AgeCheck::class, CountryCheck::class]);
+Route::view('/contact', 'contact');
+
+Check result
+------------
+http://localhost:8000/home?age=20&country=india
+
+
+
+3. Group middleware
+=====================
+php artisan make:middleware AgeCheck
+php artisan make:middleware CountryCheck
+
+bootstrap/app.php
+------------------
+use App\Http\Middleware\AgeCheck;
+use App\Http\Middleware\CountryCheck;
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        //
+        $middleware->appendToGroup('check1',[
+            AgeCheck::class,
+            CountryCheck::class
+        ]);
+		
+        // $middleware->appendToGroup('check2',[
+        //     AgeCheck::class,
+        //     CountryCheck::class
+        // ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
+
+
+AgeCheck.php
+-------------
+class AgeCheck
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        // echo 'From AgeCheck middleware';
+        if($request->age < 18){
+            die('Under age!!');
+        }
+        return $next($request);
+    }
+}
+
+CountryCheck.php
+-----------------
+class CountryCheck
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        // echo 'From AgeCheck middleware';
+        if($request->country != 'india'){
+            die('Outside India!');
+        }
+        return $next($request);
+    }
+}
+
+web.php
+--------
+//Apply group of middleware on single routes
+Route::view('/home', 'home')->middleware('check1');
+Route::view('/about', 'about');
+Route::view('/contact', 'contact');
+
+Route::get('/show', [HomeController::class, 'show'])->middleware('check1');
+Route::get('/add', [HomeController::class, 'add']);
+
+Check result
+------------
+http://localhost:8000/home?age=20&country=india
+
+
+Apply group of middleware on multiple routes
+=============================================
+web.php
+--------
+Route::view('/contact', 'contact');
+Route::get('/add', [HomeController::class, 'add']);
+
+Route::middleware('check1')->group(function(){
+	Route::view('/home', 'home');
+	Route::view('/about', 'about');
+	Route::get('/show', [HomeController::class, 'show']);
+});

@@ -1,0 +1,43 @@
+php artisan storage:link
+php artisan storage:unlink
+
+
+web.php
+--------
+Route::view('/upload', 'upload');
+Route::post('/upload', [UserController::class, 'upload']);
+Route::view('/display', 'display');
+
+upload.blade.php
+-----------------
+<div>
+    <h2>Upload Form</h2>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="filename"><br><br>
+        <button>Upload</button>
+    </form>
+</div>
+
+display.blade.php
+------------------
+<div>
+    <p>{{$path}}</p>
+    <img src="{{url('storage/'.$path)}}" style="width: 400;" alt="">
+</div>
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function upload(Request $request){
+        $path = $request->file('filename')->store('public');
+		//Use specific name
+		// $path = $request->file('filename')->storeAs('public','dummy0.jpeg');
+        $filenameArray = explode('/', $path);
+        $filepath = $filenameArray[1];
+        return view('/display', ['path'=>$filepath]);
+    }
+
+}

@@ -1,0 +1,61 @@
+user.blade.php
+---------------
+<div>
+    <h1>User page</h1>
+    <div style="border: 1px solid red;padding:10px;">
+        <form action="/user" method="post">
+            @csrf
+            <input type="text" name="username" placeholder="Enter username"><br><br>
+            <input type="password" name="password" placeholder="Enter password"><br><br>
+            <button>Submit</button>
+        </form>
+    </div>
+</div>
+
+
+web.php
+--------
+Route::view('/form', 'user');
+Route::post('/user', [UserController::class, 'getUserData']);
+
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function getUserData(Request $request){
+        echo "Request method is " . $request->method();
+        echo "<br/>";
+        echo "Request path is " . $request->path();
+        echo "<br/>";
+        echo "Request url is " . $request->url();
+        echo "<br/>";
+        echo "Request method is " . $request->input('username');
+        echo "<br/>";
+        echo "Request method is " . $request->username;
+        echo "<br/>";
+        print_r($request->input());
+        echo "<br/>";
+        print_r($request->collect());
+        echo "<br/>";
+        echo "IP is " . $request->ip();
+        echo "<br/>";
+
+        if($request->isMethod('post')){
+            echo "Post method";
+            echo "<br/>";
+        }else{
+            echo "Other method";
+            echo "<br/>";
+        }
+
+        if($request->is('user')){
+            echo "called from /user";
+            echo "<br/>";
+        }else{
+            echo "called from other path";
+            echo "<br/>";
+        }
+        // return $request;
+    }
+}

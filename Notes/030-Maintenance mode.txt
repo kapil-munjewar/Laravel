@@ -1,0 +1,6 @@
+//Maintenace for all users
+php artisan down
+
+//Maintenace for all users except with secret key users
+artisan down --secret="runitinsecretmode"
+You may bypass maintenance mode via [http://localhost:8000/runitinsecretmode].

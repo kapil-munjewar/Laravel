@@ -1,0 +1,58 @@
+web.php
+--------
+Route::view('/user', 'user');
+Route::post('/user', [UserController::class, 'addUser']);
+
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function addUser(Request $request){
+        // echo $request->message;
+        //create flash session to show success message
+        $request->session()->flash('message', 'User added successfully!!');
+        $request->session()->flash('user', $request->username);
+
+        return redirect('user');
+    }
+}
+
+
+user.php
+---------
+<div>
+    <h1>User page</h1>
+    @if(session('message'))
+    <span class="success">{{session('message')}}</span>
+    @endif
+    @if(session('user'))
+    <span class="success">{{session('user')}}</span>
+    @endif
+	
+//If you want to keep session user value only
+    {{session()->keep(['user'])}}
+	
+//If you want to keep all session values
+    <!-- {{session()->reflash()}} -->
+
+    <div style="border: 1px solid red;padding:10px;">
+        <form action="/user" method="post">
+            @csrf
+            <input type="text" name="username" placeholder="Enter username"><br><br>
+            <input type="text" name="email" placeholder="Enter email"><br><br>
+            <input type="text" name="phone" placeholder="Enter phone no"><br><br>
+            <button>Add User</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .success{
+        background-color: mediumspringgreen;
+        padding: 2px 15px;
+        margin-bottom: 5px;
+        border-radius: 2px;
+        display: inline-block;
+    }
+</style>

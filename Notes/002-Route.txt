@@ -1,0 +1,94 @@
+Route
+-----
+1.
+Route::get('/home', function () {
+    return view('home');
+});
+
+Route::view('/myhome', 'home');
+
+2.
+Route::get('/about', function () {
+    return view('about');
+});
+
+Route::get('/about/{name}', function ($name) {
+    echo $name;
+    return view('about', ['name' => $name]);
+});
+
+Inside view
+<p>{{$name}}</p>
+
+
+3.
+Redirect directly to other page
+
+route::redirect('/', '/about');
+
+Anchor tag inside html code
+<a href="/">Welcome</a>
+<a href="/home">Home</a>
+<a href="/about/kapil">About</a>
+
+Route methods
+--------------
+get -> to load a page
+post -> to store a data
+put -> update multiple things in database
+patch -> update single thing in database
+delete -> delete record from database
+options -> browser send automatically, check url available or not
+view -> to call view
+
+web.php
+--------
+Route::view('/form', 'user');
+Route::get('/user', [UserController::class, 'get']);
+Route::post('/user', [UserController::class, 'post']);
+Route::put('/user', [UserController::class, 'put']);
+Route::delete('/user', [UserController::class, 'delete']);
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function get(){
+        return "get method called";
+    }
+    function post(){
+        return "post method called";
+    }
+    function put(){
+        return "put method called";
+    }
+    function delete(){
+        return "delete method called";
+    }
+}
+
+user.blade.php
+---------------
+<div>
+    <h1>User page</h1>
+    <div style="border: 1px solid red;padding:10px;">
+	
+<!-- 
+        <form action="/user" method="get"> //GET method
+
+        <form action="/user" method="post"> //POST method
+            
+        <form action="/user" method="post"> //PUT method
+           @csrf
+            <input type="hidden" name="_method" value="PUT">
+-->
+
+        <form action="/user" method="post"> //DELETE method
+            @csrf
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="text" name="username" placeholder="Enter username"><br><br>
+            <input type="password" name="password" placeholder="Enter password"><br><br>
+            <button>Submit</button>
+        </form>
+    </div>
+</div>

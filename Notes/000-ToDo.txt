@@ -1,0 +1,5 @@
+Find out shortcuts regarding VSCode
+Find out more about Session and cookies
+upload files check once again
+Layout
+debug laravel code in VSCode

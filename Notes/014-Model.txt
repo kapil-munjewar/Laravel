@@ -1,0 +1,90 @@
+Model
+======
+web.php
+--------
+Route::get('/students', [StudentController::class, 'getStudentsData']);
+
+Student.php
+------------
+class Student extends Model
+{
+    //This is default : Model name -> Singular and Table name -> Plural
+	//Connect automatically, no need to do anything for established connection
+    // protected $table = "students"; 
+	
+	//If table name is different
+    protected $table = "college_students";
+
+    function testFunction(){
+        return "Test OK";
+    }
+}
+
+StudentController.php
+----------------------
+use App\Models\Student;
+class StudentController extends Controller
+{
+    function getStudentsData(){
+		//Use model to get table data
+        // $students = \App\Models\Student::all();
+        $students = Student::all();
+
+        //Model functions -> create object of Model
+		//$data = new \App\Models\Student;
+        $data = new Student;
+        echo $data->testFunction();
+
+        return view('home', ['students'=>$students]);
+    }
+
+welcome.php
+-----------
+<a href="/students">List of students</a>
+
+home.php
+---------
+<div>
+    <h1>Home Page</h1>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Batch</td>
+        </tr>
+        @foreach($students as $student)
+        <tr>
+            <td>{{$student->id}}</td>
+            <td>{{$student->name}}</td>
+            <td>{{$student->email}}</td>
+            <td>{{$student->batch}}</td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+
+Inspecting Models
+==================
+php artisan model:show Student
+
+//It will give you Model information eg database name, table name, attributes, relations to other table, events and observers
+
+PS D:\Kapil\laravel\laravel-12-app> php artisan model:show Student
+
+  App\Models\Student ............................................................................................  
+  Database ................................................................................................ mysql  
+  Table ........................................................................................ college_students  
+
+  Attributes ........................................................................................ type / cast  
+  id increments, unique ........................................................................... int(10) / int  
+  name ............................................................................................. varchar(100)  
+  email ............................................................................................ varchar(100)  
+  batch ............................................................................................ varchar(100)  
+
+  Relations .....................................................................................................  
+
+  Events ........................................................................................................  
+
+  Observers .....................................................................................................  
+

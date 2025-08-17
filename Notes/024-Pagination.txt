@@ -1,0 +1,44 @@
+StudentController.php
+----------------------
+class StudentController extends Controller
+{
+    function students(){
+        $students = Student::paginate(2);
+        return view('/students', ['students'=>$students]);
+    }
+}
+
+students.blade.php
+-------------------
+@if($students)
+<div>
+    <table border="1">
+        <tr style="text-align: center;">
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Batch</td>
+            <td>Action</td>
+        </tr>
+        @foreach($students as $student)
+        <tr>
+            <td>{{$student->id}}</td>
+            <td>{{$student->name}}</td>
+            <td>{{$student->email}}</td>
+            <td>{{$student->batch}}</td>
+            <td>
+                <a href="/update/{{$student->id}}">Update</a>
+                <a href="/delete/{{$student->id}}">Delete</a>
+            </td>
+        </tr>
+        @endforeach
+    </table>
+    {{$students->links()}}
+</div>
+@endif
+
+<style>
+    .w-5.h-5{
+        width: 12px;
+    }
+</style>

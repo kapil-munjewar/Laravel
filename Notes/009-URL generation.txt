@@ -1,0 +1,31 @@
+URL generation
+---------------
+Route
+------
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::get('/home', [UserController::class, 'home']);
+Route::get('/about', [UserController::class, 'about']);
+Route::get('/about/{name}', [UserController::class, 'about']);
+
+home.blade.php
+--------------
+<h1>Home page</h1>
+
+<a href="{{URL::to('/')}}">Welcome</a>
+<a href="{{URL::to('about')}}">About</a>
+
+<div>
+    <!-- <p>current: {{URL::current()}}</p>
+    <p>full: {{URL::full()}}</p> -->
+    
+    <p>current: {{url()->current()}}</p>
+    <p>full: {{url()->full()}}</p>
+
+    <!-- <p>previous: {{URL::previous()}}</p> -->
+    <p>previous: {{url()->previous()}}</p>
+
+    <!-- <a href="/about/kapil">About/kapil</a> -->
+    <a href="{{URL::to('about', ['kapil'])}}">About/kapil</a>
+</div>

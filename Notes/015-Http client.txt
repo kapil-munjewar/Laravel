@@ -1,0 +1,26 @@
+Http client
+===========
+Http client in laravel use to deal with API
+
+StudentController.php
+----------------------
+use Illuminate\Support\Facades\Http;
+class StudentController extends Controller
+{
+    function getAPIData(){
+        $response = Http::get('https://jsonplaceholder.typicode.com/todos/1');
+        $response = $response->body();
+		//$response = $response->status();
+		//$response = $response->headers();
+        return view('about', ['response'=>$response]);
+    }
+}
+
+about.blade.php
+---------------
+<div>
+    <h1>About Page</h1>
+    <p>
+        {{$response}}
+    </p>
+</div>

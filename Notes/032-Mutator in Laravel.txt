@@ -1,0 +1,49 @@
+In Laravel's Eloquent ORM, a mutator is a special method defined 
+within an Eloquent model that allows for the manipulation of 
+an attribute's value before it is saved to the database. 
+Mutators provide a clean and organized way to ensure data consistency, 
+perform formatting, or apply any necessary transformations to data before persistence.
+
+web.php
+--------
+Route::get('save', [StudentController::class, 'save']);
+
+
+Student.php
+------------
+class Student extends Model
+{
+    protected $table = 'college_students';
+	
+    public $timestamps = false; 
+	
+    protected $fillable = [
+        'name',
+        'email',
+        'batch'
+    ];
+
+    function setNameAttribute($val){
+        $this->attributes['name'] = ucfirst($val);
+    }
+}
+
+
+StudentController.php
+----------------------
+use App\Models\Student;
+class StudentController extends Controller
+{
+	function save(){
+		$student = new Student();
+		$student->name = 'sham';
+		$student->email = 'sham@test.com';
+		$student->batch = '2030';
+		
+		if($student->save()){
+			return "Data saved!";
+		}else{
+			return "Operation failled!";
+		}
+	}
+}

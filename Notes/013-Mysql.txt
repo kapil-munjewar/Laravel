@@ -1,0 +1,55 @@
+MySQL
+======
+.env file
+----------
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+
+Migrate database
+-----------------
+php artisan migrate
+
+web.php
+--------
+Route::get('/show', [HomeController::class, 'show']);
+
+HomeController.php
+-------------------
+class HomeController extends Controller
+{
+    function show(){
+        // $users = DB::select('select * from users');
+        $users = DB::table('users')->get()->all();
+        return view('home', ['users'=> $users]);
+    }
+}
+
+welcome.php
+-----------
+<a href="/show">List of users</a>
+
+home.php
+---------
+<div>
+    <h1>Home Page</h1>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+        </tr>
+        @foreach($users as $user)
+        <tr>
+            <td>{{$user->id}}</td>
+            <td>{{$user->name}}</td>
+            <td>{{$user->email}}</td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+
+

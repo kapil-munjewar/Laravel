@@ -1,0 +1,36 @@
+web.php
+--------
+// Route::any('/user', [UserController::class, 'any']);
+
+Route::match(['get','post'],'/user', [UserController::class, 'group1']);
+Route::match(['put','delete'],'/user', [UserController::class, 'group2']);
+
+user.blade.php
+---------------
+<div>
+    <h1>User page</h1>
+    <div style="border: 1px solid red;padding:10px;">
+        <form action="/user" method="post">
+            @csrf
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="text" name="username" placeholder="Enter username"><br><br>
+            <input type="password" name="password" placeholder="Enter password"><br><br>
+            <button>Submit</button>
+        </form>
+    </div>
+</div>
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function any(){
+        return "any method called";
+    }
+    function group1(){
+        return "group1 method called";
+    }
+    function group2(){
+        return "group2 method called";
+    }
+}

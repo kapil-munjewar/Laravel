@@ -1,0 +1,117 @@
+4 types of relationships
+==========================
+OneToOne
+OneToMany
+ManyToOne
+ManyToMany
+
+
+//When ID is matching
+web.php
+--------
+Route::get('list', [SellerController::class, 'list']);
+
+Seller.php
+----------
+class Seller extends Model
+{
+    function product(){
+        // return $this->hasMany('App\Models\Product');
+        return $this->hasMany(Product::class);
+    }
+}
+
+SellerController.php
+---------------------
+class SellerController extends Controller
+{
+    function list(){
+		// return Seller::find(1);
+		return Seller::find(1)->product;
+	}
+}
+
+
+
+//When ID is not matching, pass the ID
+web.php
+--------
+Route::get('list', [SellerController::class, 'list']);
+
+Seller.php
+----------
+class Seller extends Model
+{
+    function product(){
+        // return $this->hasMany('App\Models\Product', 'owner_id');
+        return $this->hasMany(Product::class, 'owner_id');
+    }
+}
+
+SellerController.php
+---------------------
+class SellerController extends Controller
+{
+    function list(){
+		return Seller::find(1)->product;
+	}
+}
+
+
+
+Example
+========
+web.php
+--------
+Route::get('one-to-one', [SellerController::class, 'oneToOne']);
+Route::get('one-to-many', [SellerController::class, 'oneToMany']);
+Route::get('many-to-one', [SellerController::class, 'manyToOne']);
+
+SellerController.php
+----------------------
+use App\Models\Product;
+use App\Models\Seller;
+class SellerController extends Controller
+{
+    function oneToOne(){
+		// return Seller::find(1);
+		return Seller::find(3)->oneOne;
+	}
+
+	function oneToMany(){
+		// return Seller::find(1);
+		return Seller::find(3)->oneMany;
+	}
+
+	function ManyToOne(){
+		// return Product::all();
+		$data = Product::with('manyToOne')->get();
+		return $data;
+	}
+}
+
+
+Seller.php			//Seller Model
+------------
+class Seller extends Model
+{
+    function oneOne(){
+        // return $this->hasMany('App\Models\Product', 'owner_id');
+        return $this->hasOne(Product::class, 'owner_id');
+    }
+
+    function oneMany(){
+        // return $this->hasMany('App\Models\Product', 'owner_id');
+        return $this->hasMany(Product::class, 'owner_id');
+    }
+}
+
+
+Product.php			//Product Model
+------------
+class Product extends Model
+{
+    function manyToOne(){
+        return $this->belongsTo(Seller::class, 'owner_id');
+    }
+}

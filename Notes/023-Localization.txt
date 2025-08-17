@@ -1,0 +1,158 @@
+command
+--------
+php artisan lang:publish
+
+.env
+-----
+APP_LOCALE=hi
+
+en/welcome.php
+--------------
+<?php
+return [
+    'heading1' => 'Welcome Page!!',
+    'heading2' => 'This is welcome page.',
+    'home' => 'Home',
+    'about' => 'About',
+    'contact' => 'Contact',
+];
+
+hi/welcome.php
+--------------
+<?php
+return [
+    'heading1' => 'स्वागत पृष्ठ!!',
+    'heading2' => 'यह स्वागत पृष्ठ है.',
+    'home' => 'घर',
+    'about' => 'के बारे में',
+    'contact' => 'संपर्क',
+];
+
+welcome.blade.php
+------------------
+<h1>{{__('welcome.heading1')}}</h1>
+<h3>{{__('welcome.heading2')}}</h3>
+<a href="/home">{{__('welcome.home')}}</a>
+<a href="/about">{{__('welcome.about')}}</a>
+<a href="/contact">{{__('welcome.contact')}}</a>
+
+
+//If you want to apply localization for single route..
+web.php
+--------
+use Illuminate\Support\Facades\App;
+
+Route::get('/{lang}', function ($lang) {
+    App::setLocale($lang);
+    return view('welcome');
+});
+
+
+//Pass dynamic parameter
+welcome.blade.php
+------------------
+<h3>{{__('welcome.welcomeMessage',['name'=>'Kapil Munjewar'])}}</h3>
+
+en/welcome.php
+--------------
+'welcomeMessage' => 'Welcome :name, How are you?'
+
+hi/welcome.php
+--------------
+'welcomeMessage' => 'स्वागत है :name, आप कैसे हैं?'
+
+
+===========================================================================================================
+//Using link
+
+web.php
+---------
+Route::get('/setlang/{lang}', function($lang){
+    Session::put('lang', $lang);
+    return redirect('/');
+});
+
+Route::middleware('SetLang')->group(function(){
+    Route::view('/', 'welcome');
+});
+
+welcome.blade.php
+-----------------
+<h1>Select Language</h1>
+<a href="/setlang/en">English</a>
+<a href="/setlang/hi">Hindi</a>
+
+<h1>{{__('welcome.heading1')}}</h1>
+<h3>{{__('welcome.heading2')}}</h3>
+
+<h3>{{__('welcome.welcomeMessage',['name'=>'Kapil Munjewar'])}}</h3>
+
+<a href="/home">{{__('welcome.home')}}</a>
+<a href="/about">{{__('welcome.about')}}</a>
+<a href="/contact">{{__('welcome.contact')}}</a>
+
+
+en/welcome.php
+--------------
+<?php
+return [
+    'heading1' => 'Welcome Page!!',
+    'heading2' => 'This is welcome page.',
+    'home' => 'Home',
+    'about' => 'About',
+    'contact' => 'Contact',
+];
+
+hi/welcome.php
+--------------
+<?php
+return [
+    'heading1' => 'स्वागत पृष्ठ!!',
+    'heading2' => 'यह स्वागत पृष्ठ है.',
+    'home' => 'घर',
+    'about' => 'के बारे में',
+    'contact' => 'संपर्क',
+];
+
+//middleware
+SetLang.php
+------------
+class SetLang
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        if($request->session()->get('lang')){
+            App::setLocale($request->session()->get('lang'));
+        }
+        return $next($request);
+    }
+}
+
+bootstrap/app.php
+------------------
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->appendToGroup('SetLang', SetLang::class);     //This is the code
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
+
+
+
+
+
+
+
+
+
+
+
+
+
+

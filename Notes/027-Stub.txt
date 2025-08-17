@@ -1,0 +1,55 @@
+php artisan stub:publish
+
+Running above command you can see all the stubs.
+It is a predefine code which generate, when we create Controller, Model, View or anything with "php artisan make:xxx  xxx-name " command.
+
+controller.plain.stub
+----------------------
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class {{ class }} extends Controller
+{
+    //
+}
+
+//Change it as follow to see changes
+controller.plain.stub
+----------------------
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class {{ class }} extends Controller
+{
+    function index(Request $request){
+		return "From index function";
+	}
+	
+}
+
+
+//Now create controller
+php artisan make:controller IndexController
+
+IndexController.php
+--------------------
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class IndexController extends Controller
+{
+    function index(Request $request){
+		return "From index function";
+	}
+}

@@ -1,0 +1,155 @@
+Form
+=====
+php artisan lang:publish //custom messages file, you don't have to write manually
+
+php artisan make:rule UpperCase //custom rule
+
+UpperCase.php
+--------------
+class UpperCase implements ValidationRule
+{
+    /**
+     * Run the validation rule.
+     *
+     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     */
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if(strtoupper($value) != $value){
+            $fail('The :attribute name must be in upper case');
+        }
+    }
+}
+
+Routes
+-------
+Route::get('/home', [UserController::class, 'home']);
+Route::post('/add-user', [UserController::class, 'addUser']);
+
+UserController.php
+-------------------
+class UserController extends Controller
+{
+    function home(){
+        return view('home');
+    }
+    function addUser(Request $request){
+
+        $request->validate([
+            // 'username' => 'required | min:3 | max:20',
+            'username' => ['required', 'min:3', 'max:20', new Uppercase],
+            'email' => 'required | email',
+            'skills' => 'required',
+            'gender' => 'required',
+            'city' => 'required',
+            'age' => 'required'
+        ],[
+            'username.required' => 'Username can not be empty',
+            'username.min' => 'Username must have minimum 3 characters',
+            'email.email' => 'Must be valid email address',
+        ]);
+
+        echo $request->username;
+        echo "<br>";
+        echo $request->email;
+        echo "<br>";
+        print_r( $request->skills);
+        echo "<br>";
+        echo $request->gender;
+        echo "<br>";
+        echo $request->city;
+        echo "<br>";
+        echo $request->age;
+    }
+}
+
+home.blade.php
+--------------
+<h1>Home page</h1>
+<div>
+    @if($errors->any())
+    {{print_r($errors)}}
+    @endif
+    <br>
+    <div><br></div>
+    @if($errors->any())
+    @foreach($errors->all() as $error)
+    <div>
+        {{$error}}
+    </div>
+    @endforeach
+    @endif
+
+    <form action="/add-user" method="post">
+        @csrf
+        <div class="input-wrapper">
+            <input type="text" name="username" value="{{old('username')}}" placeholder="Enter username"
+            class="{{$errors->first('username') ? 'input-error' : ''}}"><br>
+            <span style="color: red;">@error('username'){{$message}}@enderror</span>
+        </div>
+        <div class="input-wrapper">
+            <input type="text" name="email" value="{{old('email')}}" placeholder="Enter email"><br>
+            <span style="color: red;">@error('email'){{$message}}@enderror</span>
+        </div>
+
+        <div class="input-wrapper">
+            <h4>Skills</h4>
+            <input type="checkbox" name="skills[]" value="php" id="php" {{ in_array("php", old('skills', [])) ? 'checked' : '' }}>
+            <label for="php">PHP</label>
+            <input type="checkbox" name="skills[]" value="java" id="java" {{ in_array("java", old('skills', [])) ? 'checked' : '' }}>
+            <label for="java">Java</label>
+            <input type="checkbox" name="skills[]" value="python" id="python" {{ in_array("python", old('skills', [])) ? 'checked' : '' }}>
+            <label for="python">Python</label><br>
+            <span style="color: red;">@error('skills'){{$message}}@enderror</span>
+        </div>
+        <div class="input-wrapper">
+            <h4>Gender</h4>
+            <input type="radio" name="gender" value="male" id="male" {{ old('gender') == 'male' ? 'checked' : '' }}>
+            <label for="male">Male</label>
+            <input type="radio" name="gender" value="female" id="female" {{ old('gender') == 'female' ? 'checked' : '' }}>
+            <label for="female">Female</label><br>
+            <span style="color: red;">@error('gender'){{$message}}@enderror</span>
+        </div>
+        <div class="input-wrapper">
+            <h4>City</h4>
+            <select name="city" >
+            <option value="mumbai" {{ old('city') == 'mumbai' ? 'selected' : ''}}>Mumbai</option>
+            <option value="tokyo" {{ old('city') == 'tokyo' ? 'selected' : ''}}>Tokyo</option>
+            <option value="newyork" {{ old('city') == 'newyork' ? 'selected' : ''}}>New york</option>
+            </select><br>
+            <span style="color: red;">@error('city'){{$message}}@enderror</span>
+        </div>
+        <div class="input-wrapper">
+            <h4>Age</h4>
+            <input type="range" name="age" min="18" max="100" value="{{old('age')}}"><br>
+            <span style="color: red;">@error('age'){{$message}}@enderror</span>
+        </div>
+
+        <div class="input-wrapper">
+            <button>Submit</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    input{
+        border: 1px solid yellow;
+        height: 35px;
+        color: orange;
+    }
+    .input-wrapper{
+        padding: 10px;
+        margin: 10px 20px;
+    }
+    button{
+        border: 1px solid yellow;
+        height: 35px;
+        cursor: pointer;
+        background-color: orange;
+    }
+
+    .input-error{
+        border: 1px solid red;
+        color: red;
+    }
+</style>

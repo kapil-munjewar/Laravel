@@ -1,0 +1,61 @@
+php artisan make:component MessageComponent
+
+Controller
+-----------
+class UserController extends Controller
+{
+    function home($name){
+        $text = "This is home page.";
+        return view('home', ['text' => $text]);
+    }
+}
+
+
+MessageComponent
+-----------------
+    public $msg;
+    public $class;
+    public function __construct($msg, $class)
+    {
+        $this->msg = $msg;
+        $this->class = $class;
+    }
+	
+	
+message-component.blade.php
+----------------------------
+<div>
+    <div class="{{$class}}">{{$msg}}</div>
+</div>
+
+home.blade.php
+---------------
+<x-message-component msg="Success message!!" class="success"/>
+<x-message-component msg="Failled message!!" class="error"/>
+<x-message-component msg="Warning message!!" class="warning"/>
+
+@include('common.header')
+<h1>Home page</h1>
+@include('common.inner', ['text'=>$text])
+@includeif('common.innerr', ['text'=>$text])
+
+<style>
+    .success{
+        background-color: green;
+        padding: 10px;
+        margin: 10px 20px;
+        color: white;
+    }
+    .error{
+        background-color: red;
+        padding: 10px;
+        margin: 10px 20px;
+        color: white;
+    }
+	.warning{
+        background-color: orange;
+        padding: 10px;
+        margin: 10px 20px;
+        color: white;
+    }
+</style>

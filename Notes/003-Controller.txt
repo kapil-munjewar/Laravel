@@ -1,0 +1,55 @@
+Controller
+-----------
+php artisan make:controller UserController
+
+Ex 1 - without passing data from route
+use App\Http\Controllers\UserController;
+Route::get('home', [UserController::class, 'getUser']);
+
+class UserController extends Controller
+{
+    function getUser(){
+        return "Hello, this is Kapil.";
+    }
+}
+
+Ex 2 - passing data from route
+use App\Http\Controllers\UserController;
+Route::get('home/{name}', [UserController::class, 'getUser']);
+
+class UserController extends Controller
+{
+    function getUser($name){
+        return "Hello, this is ". $name;
+    }
+}
+
+Ex 3 - calling view from controller
+use App\Http\Controllers\UserController;
+Route::get('home', [UserController::class, 'home']);
+
+class UserController extends Controller
+{
+    function home(){
+        return view('home');
+    }
+}
+
+Ex 4 - calling view from controller with parameter
+use App\Http\Controllers\UserController;	
+Route::get('home/{name}', [UserController::class, 'home']);
+
+class UserController extends Controller
+{
+    function home($name){
+        return view('home', ['name' => $name]);
+    }
+}
+
+Ex 5 - Nested view folder eg login page inside admin folder in view directory
+class UserController extends Controller
+{
+    function loginpage(){
+        return view('admin.login');
+    }
+}

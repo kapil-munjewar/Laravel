@@ -1,0 +1,71 @@
+web.php
+--------
+Route::get('/students', [HomeController::class, 'getStudents']);
+
+HomeController.php
+-------------------
+class HomeController extends Controller
+{
+    function getStudents(){
+		//select with where
+        // $students = DB::table('college_students')->where('id', 1)->get()->all();
+
+		//Insert record
+        // $students = DB::table('college_students')->insert([
+        //     'name'=>'rohan',
+        //     'email'=>'rohan@test.com',
+        //     'batch'=>'2015'
+        // ]);
+        // if($students){
+        //     echo 'Inserted successfully!!';
+        // }else{
+        //     echo 'Insert failled!!';
+        // }
+
+		//Delete record
+        // $students = DB::table('college_students')->where('name','rohan')->delete();
+        // if($students){
+        //     echo 'delete successfully!!';
+        // }else{
+        //     echo 'delete failled!!';
+        // }
+
+		//Update record
+        $students = DB::table('college_students')->where('id',1)->update([
+            'name'=>'kapil',
+            'email'=>'kapil@test.com'
+        ]);
+        if($students){
+            echo 'update successfully!!';
+        }else{
+            echo 'update failled!!';
+        }
+
+		//Select all
+        $students = DB::table('college_students')->get()->all();
+        return view('home', ['students'=> $students]);
+
+    }
+}
+
+home.blade.php
+---------------
+<div>
+    <h1>Home Page</h1>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Batch</td>
+        </tr>
+        @foreach($students as $student)
+        <tr>
+            <td>{{$student->id}}</td>
+            <td>{{$student->name}}</td>
+            <td>{{$student->email}}</td>
+            <td>{{$student->batch}}</td>
+        </tr>
+        @endforeach
+    </table>
+</div>

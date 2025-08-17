@@ -1,0 +1,195 @@
+web.php
+-------
+Route::get('/', function(){
+    return view('welcome');
+});
+
+Route::get('/home', function(){
+    return view('home');
+});
+
+Route::view('/about', 'about');
+Route::view('/contact', 'contact');
+
+Route::get('/students', [StudentController::class, 'students']);
+
+Route::view('/add', 'add');
+Route::post('/add', [StudentController::class, 'addStudent']);
+
+Route::get('/update/{id}', [StudentController::class, 'update']);
+Route::put('/updateStudent/{id}', [StudentController::class, 'updateStudent']);
+
+Route::get('/delete/{id}', [StudentController::class, 'deleteStudent']);
+
+Route::get('/search', [StudentController::class, 'search']);
+
+Route::post('/deleteMulti', [StudentController::class, 'deleteMulti']);
+
+
+StudentController.php
+----------------------
+class StudentController extends Controller
+{
+    function students(){
+        $students = Student::paginate(2);
+        return view('/students', ['students'=>$students]);
+    }
+
+    function addStudent(Request $request){
+        $student = new Student();
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->batch = $request->batch;
+        $result = $student->save();
+
+        if($result){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function update($id){
+        $student = Student::find($id);
+        if($student){
+            return view('/updateStudent', ['student'=>$student]);
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function updateStudent(Request $request, $id){
+        $student = Student::find($id);
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->batch = $request->batch;
+
+        if($student->save()){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function deleteStudent($id){
+        $student = Student::destroy($id);
+
+        if($student){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+
+    function search(Request $request){
+        // $studentsData = Student::where('name', 'like', "%$request->searchText%")->get();
+        $studentsData = Student::where('name', 'like', "%$request->searchText%")->paginate(2);
+        // echo $studentsData;
+
+        return view('/students', ['students'=>$studentsData, 'searchText'=>$request->searchText]);
+    }
+
+    function deleteMulti(Request $request){
+ 
+        $result = Student::destroy($request->ids);
+
+        if($result){
+            return redirect('/students');
+        }else{
+            return 'Operation failled!!';
+        }
+    }
+}
+
+
+students.blade.php
+-------------------
+<h1>Manage Students data</h1>
+<a href="/add">Add New Student</a><br><br>
+@if($students)
+<div>
+    <form action="/search" method="get">
+        <input type="text" name="searchText" value="{{@$searchText}}" placeholder="search name">
+        <button>search</button>
+    </form>
+    <form action="/deleteMulti" method="post">
+        @csrf
+        <button>Delete</button>
+    <table border="1">
+        <tr style="text-align: center;">
+            <td>Selection</td>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Batch</td>
+            <td>Action</td>
+        </tr>
+        @foreach($students as $student)
+        <tr>
+            <td><input type="checkbox" name="ids[]" value="{{$student->id}}"></td>
+            <td>{{$student->id}}</td>
+            <td>{{$student->name}}</td>
+            <td>{{$student->email}}</td>
+            <td>{{$student->batch}}</td>
+            <td>
+                <a href="/update/{{$student->id}}">Update</a>
+                <a href="/delete/{{$student->id}}">Delete</a>
+            </td>
+        </tr>
+        @endforeach
+    </table>
+    </form>
+
+    {{$students->links()}}
+</div>
+@endif
+
+<style>
+    .w-5.h-5{
+        width: 10px;
+    }
+</style>
+
+
+Student.php //Model
+---------------------
+class Student extends Model
+{
+    public $timestamps = false;
+    protected $table = "college_students";
+
+}
+
+add.php
+-------
+<h2>Add student</h2>
+<div>
+    <form action="/add" method="post">
+        @csrf
+        <input type="text" name="name" placeholder="Name"><br>
+        <input type="email" name="email" placeholder="Email"><br>
+        <input type="number" name="batch" placeholder="Batch"><br>
+        <button>Submit</button>
+    </form>
+</div>
+
+updateStudent.php
+-----------------
+<h2>Update student</h2>
+<div>
+    <form action="/updateStudent/{{$student->id}}" method="post">
+        @csrf
+        <input type="hidden" name="_method" value="PUT">
+        <input type="text" name="name" value="{{$student->name}}" placeholder="Name"><br>
+        <input type="email" name="email" value="{{$student->email}}" placeholder="Email"><br>
+        <input type="number" name="batch" value="{{$student->batch}}" placeholder="Batch"><br>
+        <button>Update</button>
+        <button><a href="/students">Cancel</a></button>
+    </form>
+</div>
+
+
+welcome.blade.php
+-----------------
+<h1>Welcome Page!!</h1>
+<a href="/students">Manage Students</a>
